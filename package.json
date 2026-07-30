@@ -122,7 +122,6 @@
     "react-native-screens": "~4.24.0",
     "react-native-svg": "15.15.4",
     "redis": "^4.6.7",
-    "swagger-jsdoc": "^6.3.0",
     "zod": "^3.23.8",
     "zustand": "^5.0.0"
   },
@@ -175,6 +174,7 @@
     "semantic-release": "^24.2.9",
     "size-limit": "^11.1.4",
     "supertest": "^7.0.0",
+    "swagger-jsdoc": "^6.3.0",
     "swagger-ui-express": "^5.0.1",
     "ts-jest": "^29.4.11",
     "tsx": "^4.20.3",

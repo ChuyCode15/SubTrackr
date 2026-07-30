@@ -1,0 +1,554 @@
+openapi: 3.0.0
+info:
+  title: SubTrackr API
+  version: 1.0.0
+  description: Subscription management platform API
+  contact:
+    name: SubTrackr Team
+    email: support@subtrackr.com
+  license:
+    name: Proprietary
+    url: https://subtrackr.com/license
+
+servers:
+  - url: https://api.subtrackr.com/v1
+    description: Production
+  - url: http://localhost:3001
+    description: Local Development
+
+security:
+  - ApiKeyAuth: []
+
+tags:
+  - name: Plans
+    description: Subscription plan management
+  - name: Pricing
+    description: Pricing tiers and discounts
+  - name: Features
+    description: Feature flags and gating
+  - name: Themes
+    description: Merchant theme customization
+  - name: Public
+    description: Public configuration endpoints
+  - name: Health
+    description: Service health checks
+  - name: GraphQL
+    description: GraphQL API endpoint
+  - name: Metrics
+    description: Prometheus metrics
+  - name: Rate Limits
+    description: Rate limit management
+
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      summary: Health check
+      tags: [Health]
+      security: []
+      responses:
+        '200':
+          description: Service healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  planCache:
+                    type: string
+                    example: redis
+        '500':
+          description: Internal server error
+
+  /plans:
+    get:
+      operationId: listPlans
+      summary: List all plans
+      tags: [Plans]
+      responses:
+        '200':
+          description: List of plans
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Plan'
+        '500':
+          description: Internal server error
+    post:
+      operationId: createPlan
+      summary: Create a new plan
+      tags: [Plans]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanInput'
+      responses:
+        '201':
+          description: Plan created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Plan'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+
+  /plans/{id}:
+    get:
+      operationId: getPlanById
+      summary: Get plan by ID
+      tags: [Plans]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Plan found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Plan'
+        '404':
+          description: Plan not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+    patch:
+      operationId: updatePlan
+      summary: Update a plan
+      tags: [Plans]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlanUpdateInput'
+      responses:
+        '200':
+          description: Plan updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Plan'
+        '404':
+          description: Plan not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+    delete:
+      operationId: deletePlan
+      summary: Deactivate a plan
+      tags: [Plans]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Plan deactivated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/Plan'
+        '404':
+          description: Plan not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+
+  /pricing:
+    get:
+      operationId: getPricing
+      summary: Get public pricing tiers
+      tags: [Pricing]
+      responses:
+        '200':
+          description: Pricing tiers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PricingTier'
+        '500':
+          description: Internal server error
+
+  /features:
+    get:
+      operationId: getFeatures
+      summary: Get public feature flags
+      tags: [Features]
+      responses:
+        '200':
+          description: Feature flags
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Feature'
+        '500':
+          description: Internal server error
+
+  /graphql:
+    post:
+      operationId: graphqlQuery
+      summary: GraphQL endpoint
+      tags: [GraphQL]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                variables:
+                  type: object
+      responses:
+        '200':
+          description: GraphQL response
+        '400':
+          description: Bad request
+        '500':
+          description: Internal server error
+
+  /metrics/plan-cache:
+    get:
+      operationId: getPlanCacheMetrics
+      summary: Prometheus metrics for plan cache
+      tags: [Metrics]
+      security: []
+      responses:
+        '200':
+          description: Prometheus metrics
+          content:
+            text/plain:
+              schema:
+                type: string
+        '500':
+          description: Internal server error
+
+  /rate-limits/analytics:
+    get:
+      operationId: getRateLimitAnalytics
+      summary: Rate limit analytics
+      tags: [Rate Limits]
+      parameters:
+        - name: tier
+          in: query
+          schema:
+            type: string
+            enum: [FREE, BASIC, PREMIUM, ENTERPRISE]
+      responses:
+        '200':
+          description: Rate limit analytics
+          content:
+            application/json:
+              schema:
+                type: object
+        '500':
+          description: Internal server error
+
+  /rate-limits/status:
+    get:
+      operationId: getRateLimitStatus
+      summary: Rate limit status
+      tags: [Rate Limits]
+      parameters:
+        - name: apiKey
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: tier
+          in: query
+          schema:
+            type: string
+            enum: [FREE, BASIC, PREMIUM, ENTERPRISE]
+      responses:
+        '200':
+          description: Rate limit status
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Missing apiKey
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+
+  /rate-limits/bypass:
+    post:
+      operationId: manageBypass
+      summary: Manage bypass list
+      tags: [Rate Limits]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+                - value
+                - action
+              properties:
+                type:
+                  type: string
+                  enum: [key, user]
+                value:
+                  type: string
+                action:
+                  type: string
+                  enum: [add, remove]
+      responses:
+        '200':
+          description: Bypass updated
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+
+  /rate-limits/config:
+    post:
+      operationId: setCustomRateLimits
+      summary: Set custom rate limits
+      tags: [Rate Limits]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - apiKey
+              properties:
+                apiKey:
+                  type: string
+                limits:
+                  type: object
+                  properties:
+                    hourlyLimit:
+                      type: integer
+                    dailyLimit:
+                      type: integer
+                    monthlyLimit:
+                      type: integer
+                    burstLimit:
+                      type: integer
+                    concurrentLimit:
+                      type: integer
+      responses:
+        '200':
+          description: Custom limits set
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    Plan:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        price:
+          type: number
+        currency:
+          type: string
+        billingCycle:
+          type: string
+          enum: [monthly, yearly]
+        features:
+          type: array
+          items:
+            type: string
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    PlanInput:
+      type: object
+      required:
+        - name
+        - price
+        - currency
+        - billingCycle
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+        currency:
+          type: string
+        billingCycle:
+          type: string
+          enum: [monthly, yearly]
+        features:
+          type: array
+          items:
+            type: string
+
+    PlanUpdateInput:
+      type: object
+      properties:
+        name:
+          type: string
+        price:
+          type: number
+        currency:
+          type: string
+        billingCycle:
+          type: string
+          enum: [monthly, yearly]
+        features:
+          type: array
+          items:
+            type: string
+        isActive:
+          type: boolean
+
+    PricingTier:
+      type: object
+      properties:
+        planId:
+          type: string
+        monthlyPrice:
+          type: number
+        yearlyPrice:
+          type: number
+        currency:
+          type: string
+        discountPercent:
+          type: number
+
+    Feature:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        enabled:
+          type: boolean
+        tierAccess:
+          type: array
+          items:
+            type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          properties:
+            message:
+              type: string
+        status:
+          type: integer
