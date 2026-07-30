@@ -1,0 +1,88 @@
+get:
+  operationId: getPlanById
+  summary: Get a plan by ID
+  tags: [Plans]
+  parameters:
+    - $ref: '../parameters/PlanId.yaml'
+  responses:
+    '200':
+      description: Plan found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: '../schemas/Plan.yaml'
+              requestId:
+                type: string
+                example: "req_abc123"
+    '404':
+      $ref: '../responses/NotFound.yaml'
+    '500':
+      $ref: '../responses/InternalError.yaml'
+
+patch:
+  operationId: updatePlan
+  summary: Update a plan
+  tags: [Plans]
+  parameters:
+    - $ref: '../parameters/PlanId.yaml'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/PlanUpdateInput.yaml'
+  responses:
+    '200':
+      description: Plan updated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: '../schemas/Plan.yaml'
+              requestId:
+                type: string
+                example: "req_abc123"
+    '400':
+      $ref: '../responses/BadRequest.yaml'
+    '404':
+      $ref: '../responses/NotFound.yaml'
+    '500':
+      $ref: '../responses/InternalError.yaml'
+
+delete:
+  operationId: deactivatePlan
+  summary: Deactivate a plan
+  tags: [Plans]
+  parameters:
+    - $ref: '../parameters/PlanId.yaml'
+  responses:
+    '200':
+      description: Plan deactivated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: '../schemas/Plan.yaml'
+              requestId:
+                type: string
+                example: "req_abc123"
+    '404':
+      $ref: '../responses/NotFound.yaml'
+    '500':
+      $ref: '../responses/InternalError.yaml'

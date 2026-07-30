@@ -1,0 +1,59 @@
+get:
+  operationId: getThemes
+  summary: List themes for merchant
+  tags: [Themes]
+  parameters:
+    - $ref: '../parameters/MerchantId.yaml'
+  responses:
+    '200':
+      description: List of themes
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: array
+                items:
+                  $ref: '../schemas/Theme.yaml'
+              requestId:
+                type: string
+                example: "req_abc123"
+    '500':
+      $ref: '../responses/InternalError.yaml'
+
+post:
+  operationId: createTheme
+  summary: Create a new theme
+  tags: [Themes]
+  parameters:
+    - $ref: '../parameters/MerchantId.yaml'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/ThemeInput.yaml'
+  responses:
+    '201':
+      description: Theme created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: '../schemas/Theme.yaml'
+              requestId:
+                type: string
+                example: "req_abc123"
+    '400':
+      $ref: '../responses/BadRequest.yaml'
+    '500':
+      $ref: '../responses/InternalError.yaml'

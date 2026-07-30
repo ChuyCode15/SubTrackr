@@ -1,0 +1,91 @@
+get:
+  operationId: getRateLimitAnalytics
+  summary: Get rate limit analytics
+  tags: [Rate Limits]
+  parameters:
+    - $ref: '../parameters/Tier.yaml'
+  responses:
+    '200':
+      description: Rate limit analytics retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                properties:
+                  totalRequests:
+                    type: integer
+                    example: 12345
+                  rateLimitHits:
+                    type: integer
+                    example: 123
+                  hitRate:
+                    type: number
+                    example: 0.01
+                  topThrottledKeys:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        key:
+                          type: string
+                        hits:
+                          type: integer
+                  topThrottledEndpoints:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        endpoint:
+                          type: string
+                        hits:
+                          type: integer
+                  byTier:
+                    type: object
+                    properties:
+                      FREE:
+                        type: object
+                        properties:
+                          requests:
+                            type: integer
+                          hits:
+                            type: integer
+                          hitRate:
+                            type: number
+                      BASIC:
+                        type: object
+                        properties:
+                          requests:
+                            type: integer
+                          hits:
+                            type: integer
+                          hitRate:
+                            type: number
+                      PREMIUM:
+                        type: object
+                        properties:
+                          requests:
+                            type: integer
+                          hits:
+                            type: integer
+                          hitRate:
+                            type: number
+                      ENTERPRISE:
+                        type: object
+                        properties:
+                          requests:
+                            type: integer
+                          hits:
+                            type: integer
+                          hitRate:
+                            type: number
+              requestId:
+                type: string
+                example: "req_abc123"
+    '500':
+      $ref: '../responses/InternalError.yaml'

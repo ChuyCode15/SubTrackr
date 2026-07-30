@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "swagger": "npx tsx swagger-ui-server.ts",
+    "swagger": "npx tsx backend/config/swagger.ts",
     "start": "expo start --dev-client",
     "start:expo-go": "expo start",
     "android": "expo run:android",
@@ -78,6 +78,7 @@
     "isr:validate:dry": "node scripts/isr-validate.js --dry-run"
   },
   "dependencies": {
+    "@apidevtools/swagger-parser": "^12.1.0",
     "@graphql-tools/schema": "^10.0.31",
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/datetimepicker": "^9.1.0",

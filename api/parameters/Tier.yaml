@@ -1,0 +1,7 @@
+name: tier
+in: query
+schema:
+  type: string
+  enum: [FREE, BASIC, PREMIUM, ENTERPRISE]
+description: Subscription tier filter
+example: "PREMIUM"

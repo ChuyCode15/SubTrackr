@@ -1,0 +1,30 @@
+post:
+  operationId: purgeUserCache
+  summary: Purge user-scoped cache entries
+  tags: [Cache]
+  parameters:
+    - name: userId
+      in: query
+      required: true
+      schema:
+        type: string
+      description: User identifier
+      example: "user_123"
+  responses:
+    '200':
+      description: Cache purged successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              requestId:
+                type: string
+                example: "req_abc123"
+    '400':
+      $ref: '../responses/BadRequest.yaml'
+    '500':
+      $ref: '../responses/InternalError.yaml'

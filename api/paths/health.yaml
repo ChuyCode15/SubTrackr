@@ -1,0 +1,22 @@
+get:
+  operationId: getHealth
+  summary: Health check
+  tags: [Health]
+  security: []
+  responses:
+    '200':
+      description: Service healthy
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status:
+                type: string
+                example: "ok"
+              planCache:
+                type: string
+                enum: [redis, degraded]
+                example: "redis"
+    '500':
+      $ref: '../responses/InternalError.yaml'

@@ -1,0 +1,45 @@
+post:
+  operationId: graphqlQuery
+  summary: GraphQL endpoint
+  tags: [GraphQL]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            query:
+              type: string
+              example: |
+                query {
+                  plans {
+                    id
+                    name
+                    price
+                  }
+                }
+            variables:
+              type: object
+              example: {}
+  responses:
+    '200':
+      description: GraphQL response
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+              errors:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+    '400':
+      $ref: '../responses/BadRequest.yaml'
+    '500':
+      $ref: '../responses/InternalError.yaml'

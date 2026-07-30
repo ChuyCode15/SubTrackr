@@ -1,0 +1,55 @@
+get:
+  operationId: listPlans
+  summary: List all subscription plans
+  tags: [Plans]
+  responses:
+    '200':
+      description: List of plans
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: array
+                items:
+                  $ref: '../schemas/Plan.yaml'
+              requestId:
+                type: string
+                example: "req_abc123"
+    '500':
+      $ref: '../responses/InternalError.yaml'
+
+post:
+  operationId: createPlan
+  summary: Create a new subscription plan
+  tags: [Plans]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/PlanInput.yaml'
+  responses:
+    '201':
+      description: Plan created successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: '../schemas/Plan.yaml'
+              requestId:
+                type: string
+                example: "req_abc123"
+    '400':
+      $ref: '../responses/BadRequest.yaml'
+    '500':
+      $ref: '../responses/InternalError.yaml'

@@ -1,0 +1,72 @@
+get:
+  operationId: getRateLimitStatus
+  summary: Get rate limit status for an API key
+  tags: [Rate Limits]
+  parameters:
+    - $ref: '../parameters/ApiKey.yaml'
+    - $ref: '../parameters/Tier.yaml'
+  responses:
+    '200':
+      description: Rate limit status retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                properties:
+                  limits:
+                    type: object
+                    properties:
+                      hourlyLimit:
+                        type: integer
+                      dailyLimit:
+                        type: integer
+                      monthlyLimit:
+                        type: integer
+                      burstLimit:
+                        type: integer
+                      concurrentLimit:
+                        type: integer
+                  current:
+                    type: object
+                    properties:
+                      hourly:
+                        type: integer
+                      daily:
+                        type: integer
+                      monthly:
+                        type: integer
+                      burstTokens:
+                        type: integer
+                  remaining:
+                    type: object
+                    properties:
+                      hourly:
+                        type: integer
+                      daily:
+                        type: integer
+                      monthly:
+                        type: integer
+                      burstTokens:
+                        type: integer
+                  resetAt:
+                    type: object
+                    properties:
+                      hourly:
+                        type: integer
+                      daily:
+                        type: integer
+                      monthly:
+                        type: integer
+              requestId:
+                type: string
+                example: "req_abc123"
+    '400':
+      $ref: '../responses/BadRequest.yaml'
+    '500':
+      $ref: '../responses/InternalError.yaml'

@@ -1,0 +1,17 @@
+type: object
+properties:
+  planId:
+    type: string
+    example: "premium"
+  monthlyPrice:
+    type: number
+    example: 29.99
+  yearlyPrice:
+    type: number
+    example: 299.99
+  currency:
+    type: string
+    example: "USD"
+  discountPercent:
+    type: number
+    example: 17

@@ -1,0 +1,6 @@
+name: x-merchant-id
+in: header
+schema:
+  type: string
+description: Merchant identifier for multi-tenant isolation
+example: "merchant_123"

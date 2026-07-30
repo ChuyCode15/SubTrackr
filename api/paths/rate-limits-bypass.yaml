@@ -1,0 +1,57 @@
+post:
+  operationId: manageBypass
+  summary: Manage bypass list
+  tags: [Rate Limits]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - type
+            - value
+            - action
+          properties:
+            type:
+              type: string
+              enum: [key, user]
+              example: "key"
+            value:
+              type: string
+              example: "sk_live_abc123"
+            action:
+              type: string
+              enum: [add, remove]
+              example: "add"
+  responses:
+    '200':
+      description: Bypass list updated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                properties:
+                  bypassKeys:
+                    type: array
+                    items:
+                      type: string
+                    example: ["sk_live_abc123", "sk_live_xyz789"]
+                  bypassUsers:
+                    type: array
+                    items:
+                      type: string
+                    example: ["user_123"]
+              requestId:
+                type: string
+                example: "req_abc123"
+    '400':
+      $ref: '../responses/BadRequest.yaml'
+    '500':
+      $ref: '../responses/InternalError.yaml'

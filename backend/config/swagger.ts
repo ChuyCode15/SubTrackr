@@ -1,67 +1,47 @@
-import swaggerJsdoc from 'swagger-jsdoc';
+import express from 'express';
+import swaggerUi from 'swagger-ui-express';
+import fs from 'fs';
+import path from 'path';
 
+const app = express();
+const PORT = 3002;
 
+// CAMBIA: __dirname apunta a backend/config/, subimos 2 niveles
+const specPath = path.join(__dirname, '../../api/bundled.json');
 
-const options = {
-  definition: {
-    openapi: '3.0.3',
-    info: {
-      title: 'SubTrackr Subscription API',
-      description: 'API para la gestión de suscripciones de SubTrackr',
-      version: '1.0.0',
-      contact: {
-        name: 'SubTrackr Team',
-        url: 'https://github.com/Smartdevs17/SubTrackr'
-      }
+if (!fs.existsSync(specPath)) {
+  console.error('❌ bundled.json not found at:', specPath);
+  process.exit(1);
+}
+
+const swaggerDocument = JSON.parse(fs.readFileSync(specPath, 'utf8'));
+
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerDocument, {
+    explorer: true,
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'SubTrackr API Documentation',
+    swaggerOptions: {
+      persistAuthorization: true,
+      displayRequestDuration: true,
+      filter: true,
+      tryItOutEnabled: true,
     },
-    servers: [
-      {
-        url: 'http://localhost:3000/api',
-        description: 'Servidor local de desarrollo'
-      },
-      {
-        url: 'https://sandbox.subtrackr.io/v1',
-        description: 'Sandbox'
-      },
-      {
-        url: 'https://api.subtrackr.io/v1',
-        description: 'Producción'
-      }
-    ],
-    components: {
-      securitySchemes: {
-        bearerAuth: {
-          type: 'http',
-          scheme: 'bearer',
-          bearerFormat: 'JWT'
-        }
-      }
-    },
-    security: [
-      {
-        bearerAuth: []
-      }
-    ],
-    tags: [
-      {
-        name: 'Subscriptions',
-        description: 'Gestión de suscripciones'
-      },
-      {
-        name: 'Plans',
-        description: 'Gestión de planes'
-      },
-      {
-        name: 'Customers',
-        description: 'Gestión de clientes'
-      },
-      {
-        name: 'Webhooks',
-        description: 'Gestión de webhooks'
-      }
-    ]
-  },
-  apis: ['./**/*.ts']
-};
+  })
+);
 
-export const swaggerSpec = swaggerJsdoc(options);
+app.get('/', (req, res) => res.redirect('/api-docs'));
+
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok', service: 'SubTrackr API Docs', version: '1.0.0' });
+});
+
+app.listen(PORT, () => {
+  console.log(`\n📚 SubTrackr API Documentation`);
+  console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+  console.log(`📍 Swagger UI: http://localhost:${PORT}/api-docs`);
+  console.log(`✅ Health:     http://localhost:${PORT}/health`);
+  console.log(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`);
+});

@@ -1,0 +1,17 @@
+type: object
+properties:
+  id:
+    type: string
+    example: "advanced_analytics"
+  name:
+    type: string
+    example: "Advanced Analytics"
+  enabled:
+    type: boolean
+    example: true
+  tierAccess:
+    type: array
+    items:
+      type: string
+    example: ["PREMIUM", "ENTERPRISE"]
+

@@ -1,0 +1,11 @@
+description: Internal server error
+content:
+  application/json:
+    schema:
+      $ref: '../schemas/ErrorResponse.yaml'
+    example:
+      success: false
+      error:
+        message: "Internal server error"
+      status: 500
+      requestId: "req_abc123"

@@ -1,0 +1,18 @@
+type: object
+required:
+  - id
+  - name
+  - config
+properties:
+  id:
+    type: string
+    example: "theme_dark"
+  name:
+    type: string
+    example: "Dark Theme"
+  config:
+    type: object
+    example:
+      primaryColor: "#1a1a2e"
+      secondaryColor: "#16213e"
+      fontFamily: "Inter"

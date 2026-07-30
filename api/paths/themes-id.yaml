@@ -1,0 +1,92 @@
+get:
+  operationId: getThemeById
+  summary: Get theme by ID
+  tags: [Themes]
+  parameters:
+    - $ref: '../parameters/ThemeId.yaml'
+  responses:
+    '200':
+      description: Theme found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: '../schemas/Theme.yaml'
+              requestId:
+                type: string
+                example: "req_abc123"
+    '404':
+      $ref: '../responses/NotFound.yaml'
+    '500':
+      $ref: '../responses/InternalError.yaml'
+
+patch:
+  operationId: updateTheme
+  summary: Update a theme
+  tags: [Themes]
+  parameters:
+    - $ref: '../parameters/ThemeId.yaml'
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/ThemeUpdateInput.yaml'
+  responses:
+    '200':
+      description: Theme updated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: '../schemas/Theme.yaml'
+              requestId:
+                type: string
+                example: "req_abc123"
+    '400':
+      $ref: '../responses/BadRequest.yaml'
+    '404':
+      $ref: '../responses/NotFound.yaml'
+    '500':
+      $ref: '../responses/InternalError.yaml'
+
+delete:
+  operationId: deleteTheme
+  summary: Delete a theme
+  tags: [Themes]
+  parameters:
+    - $ref: '../parameters/ThemeId.yaml'
+  responses:
+    '200':
+      description: Theme deleted successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                properties:
+                  deleted:
+                    type: boolean
+                    example: true
+              requestId:
+                type: string
+                example: "req_abc123"
+    '404':
+      $ref: '../responses/NotFound.yaml'
+    '500':
+      $ref: '../responses/InternalError.yaml'

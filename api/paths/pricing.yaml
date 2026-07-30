@@ -1,0 +1,24 @@
+get:
+  operationId: getPublicPricing
+  summary: Get public pricing tiers
+  tags: [Pricing]
+  responses:
+    '200':
+      description: Pricing tiers retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: array
+                items:
+                  $ref: '../schemas/PricingTier.yaml'
+              requestId:
+                type: string
+                example: "req_abc123"
+    '500':
+      $ref: '../responses/InternalError.yaml'

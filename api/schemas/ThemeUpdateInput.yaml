@@ -1,0 +1,14 @@
+type: object
+properties:
+  name:
+    type: string
+    example: "Light Theme"
+  config:
+    type: object
+    example:
+      primaryColor: "#ffffff"
+      secondaryColor: "#f0f0f0"
+      fontFamily: "Inter"
+  isActive:
+    type: boolean
+    example: true

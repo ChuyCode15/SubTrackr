@@ -1,0 +1,56 @@
+get:
+  operationId: getPublicConfig
+  summary: Get public configuration
+  tags: [Public]
+  parameters:
+    - name: path
+      in: path
+      required: true
+      schema:
+        type: string
+      description: Configuration path (e.g., app/version)
+      example: "app/version"
+  responses:
+    '200':
+      description: Configuration retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                oneOf:
+                  - $ref: '../schemas/ConfigEntry.yaml'
+                  - type: array
+                    items:
+                      $ref: '../schemas/ConfigEntry.yaml'
+              requestId:
+                type: string
+                example: "req_abc123"
+          examples:
+            single:
+              value:
+                success: true
+                data:
+                  key: "app/version"
+                  value:
+                    minSupported: "1.0.0"
+                    latest: "1.0.0"
+            list:
+              value:
+                success: true
+                data:
+                  - key: "app/version"
+                    value:
+                      minSupported: "1.0.0"
+                      latest: "1.0.0"
+                  - key: "app/support"
+                    value:
+                      email: "support@subtrackr.com"
+    '404':
+      $ref: '../responses/NotFound.yaml'
+    '500':
+      $ref: '../responses/InternalError.yaml'

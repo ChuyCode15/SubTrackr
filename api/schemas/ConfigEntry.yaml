@@ -1,0 +1,10 @@
+type: object
+properties:
+  key:
+    type: string
+    example: "app/version"
+  value:
+    type: object
+    example:
+      minSupported: "1.0.0"
+      latest: "1.0.0"

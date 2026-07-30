@@ -1,0 +1,17 @@
+type: object
+properties:
+  success:
+    type: boolean
+    example: false
+  error:
+    type: object
+    properties:
+      message:
+        type: string
+        example: "Plan not found"
+  status:
+    type: integer
+    example: 404
+  requestId:
+    type: string
+    example: "req_abc123"

@@ -1,0 +1,15 @@
+type: object
+properties:
+  monthlyPrice:
+    type: number
+    minimum: 0
+    example: 39.99
+  yearlyPrice:
+    type: number
+    minimum: 0
+    example: 399.99
+  discountPercent:
+    type: number
+    minimum: 0
+    maximum: 100
+    example: 20

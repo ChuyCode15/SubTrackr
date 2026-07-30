@@ -1,0 +1,21 @@
+get:
+  operationId: getPlanCacheMetrics
+  summary: Prometheus metrics for plan cache
+  tags: [Metrics]
+  security: []
+  responses:
+    '200':
+      description: Prometheus metrics
+      content:
+        text/plain:
+          schema:
+            type: string
+          example: |
+            # HELP plan_cache_hits_total Total plan cache hits
+            # TYPE plan_cache_hits_total counter
+            plan_cache_hits_total 12345
+            # HELP plan_cache_misses_total Total plan cache misses
+            # TYPE plan_cache_misses_total counter
+            plan_cache_misses_total 678
+    '500':
+      $ref: '../responses/InternalError.yaml'

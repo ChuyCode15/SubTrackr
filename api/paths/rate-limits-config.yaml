@@ -1,0 +1,71 @@
+post:
+  operationId: setCustomRateLimits
+  summary: Set custom rate limits for an API key
+  tags: [Rate Limits]
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - apiKey
+          properties:
+            apiKey:
+              type: string
+              example: "sk_live_abc123"
+            limits:
+              type: object
+              properties:
+                hourlyLimit:
+                  type: integer
+                  example: 5000
+                dailyLimit:
+                  type: integer
+                  example: 50000
+                monthlyLimit:
+                  type: integer
+                  example: 500000
+                burstLimit:
+                  type: integer
+                  example: 200
+                concurrentLimit:
+                  type: integer
+                  example: 50
+  responses:
+    '200':
+      description: Custom rate limits set successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: object
+                properties:
+                  apiKey:
+                    type: string
+                    example: "sk_live_abc123"
+                  limits:
+                    type: object
+                    properties:
+                      hourlyLimit:
+                        type: integer
+                      dailyLimit:
+                        type: integer
+                      monthlyLimit:
+                        type: integer
+                      burstLimit:
+                        type: integer
+                      concurrentLimit:
+                        type: integer
+              requestId:
+                type: string
+                example: "req_abc123"
+    '400':
+      $ref: '../responses/BadRequest.yaml'
+    '500':
+      $ref: '../responses/InternalError.yaml'

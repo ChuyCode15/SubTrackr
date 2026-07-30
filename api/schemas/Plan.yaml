@@ -1,0 +1,32 @@
+type: object
+properties:
+  id:
+    type: string
+    example: "plan_premium"
+  name:
+    type: string
+    example: "Premium Plan"
+  price:
+    type: number
+    example: 29.99
+  currency:
+    type: string
+    example: "USD"
+  billingCycle:
+    type: string
+    enum: [monthly, yearly]
+    example: "monthly"
+  features:
+    type: array
+    items:
+      type: string
+    example: ["Unlimited subscriptions", "Advanced analytics"]
+  isActive:
+    type: boolean
+    example: true
+  createdAt:
+    type: string
+    format: date-time
+  updatedAt:
+    type: string
+    format: date-time

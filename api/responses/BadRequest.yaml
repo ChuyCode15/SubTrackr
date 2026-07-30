@@ -1,0 +1,11 @@
+description: Bad request
+content:
+  application/json:
+    schema:
+      $ref: '../schemas/ErrorResponse.yaml'
+    example:
+      success: false
+      error:
+        message: "Missing required field: name"
+      status: 400
+      requestId: "req_abc123"

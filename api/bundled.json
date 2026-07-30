@@ -1,0 +1,1805 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "SubTrackr API",
+    "version": "1.0.0",
+    "description": "Subscription management platform API",
+    "contact": {
+      "name": "SubTrackr Team",
+      "email": "support@subtrackr.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.subtrackr.com/v1",
+      "description": "Production"
+    },
+    {
+      "url": "http://localhost:3001",
+      "description": "Local Development"
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Plans",
+      "description": "Subscription plan management"
+    },
+    {
+      "name": "Pricing",
+      "description": "Pricing tiers and discounts"
+    },
+    {
+      "name": "Features",
+      "description": "Feature flags and gating"
+    },
+    {
+      "name": "Themes",
+      "description": "Merchant theme customization"
+    },
+    {
+      "name": "Public",
+      "description": "Public configuration endpoints"
+    },
+    {
+      "name": "Health",
+      "description": "Service health checks"
+    },
+    {
+      "name": "GraphQL",
+      "description": "GraphQL API endpoint"
+    },
+    {
+      "name": "Metrics",
+      "description": "Prometheus metrics"
+    },
+    {
+      "name": "Rate Limits",
+      "description": "Rate limit management"
+    },
+    {
+      "name": "Cache",
+      "description": "Cache management"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "getHealth",
+        "summary": "Health check",
+        "tags": ["Health"],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Service healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "planCache": {
+                      "type": "string",
+                      "enum": ["redis", "degraded"],
+                      "example": "redis"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/plans": {
+      "get": {
+        "operationId": "listPlans",
+        "summary": "List all subscription plans",
+        "tags": ["Plans"],
+        "responses": {
+          "200": {
+            "description": "List of plans",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Plan"
+                      }
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createPlan",
+        "summary": "Create a new subscription plan",
+        "tags": ["Plans"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Plan created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Plan"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/plans/{id}": {
+      "get": {
+        "operationId": "getPlanById",
+        "summary": "Get a plan by ID",
+        "tags": ["Plans"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PlanId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plan found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Plan"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updatePlan",
+        "summary": "Update a plan",
+        "tags": ["Plans"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PlanId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlanUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Plan updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Plan"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deactivatePlan",
+        "summary": "Deactivate a plan",
+        "tags": ["Plans"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/PlanId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Plan deactivated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Plan"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/pricing": {
+      "get": {
+        "operationId": "getPublicPricing",
+        "summary": "Get public pricing tiers",
+        "tags": ["Pricing"],
+        "responses": {
+          "200": {
+            "description": "Pricing tiers retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PricingTier"
+                      }
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/features": {
+      "get": {
+        "operationId": "getFeatures",
+        "summary": "Get public feature flags",
+        "tags": ["Features"],
+        "responses": {
+          "200": {
+            "description": "Feature flags retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Feature"
+                      }
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/themes": {
+      "get": {
+        "operationId": "getThemes",
+        "summary": "List themes for merchant",
+        "tags": ["Themes"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/MerchantId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of themes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Theme"
+                      }
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createTheme",
+        "summary": "Create a new theme",
+        "tags": ["Themes"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/MerchantId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThemeInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Theme created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Theme"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/themes/{id}": {
+      "get": {
+        "operationId": "getThemeById",
+        "summary": "Get theme by ID",
+        "tags": ["Themes"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ThemeId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Theme found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Theme"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "patch": {
+        "operationId": "updateTheme",
+        "summary": "Update a theme",
+        "tags": ["Themes"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ThemeId"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThemeUpdateInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Theme updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Theme"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteTheme",
+        "summary": "Delete a theme",
+        "tags": ["Themes"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ThemeId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Theme deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "deleted": {
+                          "type": "boolean",
+                          "example": true
+                        }
+                      }
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/themes/{id}/activate": {
+      "post": {
+        "operationId": "activateTheme",
+        "summary": "Activate a theme",
+        "tags": ["Themes"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/MerchantId"
+          },
+          {
+            "$ref": "#/components/parameters/ThemeId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Theme activated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Theme"
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/public/{path}": {
+      "get": {
+        "operationId": "getPublicConfig",
+        "summary": "Get public configuration",
+        "tags": ["Public"],
+        "parameters": [
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Configuration path (e.g., app/version)",
+            "example": "app/version"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Configuration retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "oneOf": [
+                        {
+                          "$ref": "#/components/schemas/ConfigEntry"
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/ConfigEntry"
+                          }
+                        }
+                      ]
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                },
+                "examples": {
+                  "single": {
+                    "value": {
+                      "success": true,
+                      "data": {
+                        "key": "app/version",
+                        "value": {
+                          "minSupported": "1.0.0",
+                          "latest": "1.0.0"
+                        }
+                      }
+                    }
+                  },
+                  "list": {
+                    "value": {
+                      "success": true,
+                      "data": [
+                        {
+                          "key": "app/version",
+                          "value": {
+                            "minSupported": "1.0.0",
+                            "latest": "1.0.0"
+                          }
+                        },
+                        {
+                          "key": "app/support",
+                          "value": {
+                            "email": "support@subtrackr.com"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/graphql": {
+      "post": {
+        "operationId": "graphqlQuery",
+        "summary": "GraphQL endpoint",
+        "tags": ["GraphQL"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "example": "query {\n  plans {\n    id\n    name\n    price\n  }\n}\n"
+                  },
+                  "variables": {
+                    "type": "object",
+                    "example": {}
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "GraphQL response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "message": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/metrics/plan-cache": {
+      "get": {
+        "operationId": "getPlanCacheMetrics",
+        "summary": "Prometheus metrics for plan cache",
+        "tags": ["Metrics"],
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Prometheus metrics",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "# HELP plan_cache_hits_total Total plan cache hits\n# TYPE plan_cache_hits_total counter\nplan_cache_hits_total 12345\n# HELP plan_cache_misses_total Total plan cache misses\n# TYPE plan_cache_misses_total counter\nplan_cache_misses_total 678\n"
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/rate-limits/analytics": {
+      "get": {
+        "operationId": "getRateLimitAnalytics",
+        "summary": "Get rate limit analytics",
+        "tags": ["Rate Limits"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Tier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rate limit analytics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "totalRequests": {
+                          "type": "integer",
+                          "example": 12345
+                        },
+                        "rateLimitHits": {
+                          "type": "integer",
+                          "example": 123
+                        },
+                        "hitRate": {
+                          "type": "number",
+                          "example": 0.01
+                        },
+                        "topThrottledKeys": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "key": {
+                                "type": "string"
+                              },
+                              "hits": {
+                                "type": "integer"
+                              }
+                            }
+                          }
+                        },
+                        "topThrottledEndpoints": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "endpoint": {
+                                "type": "string"
+                              },
+                              "hits": {
+                                "type": "integer"
+                              }
+                            }
+                          }
+                        },
+                        "byTier": {
+                          "type": "object",
+                          "properties": {
+                            "FREE": {
+                              "type": "object",
+                              "properties": {
+                                "requests": {
+                                  "type": "integer"
+                                },
+                                "hits": {
+                                  "type": "integer"
+                                },
+                                "hitRate": {
+                                  "type": "number"
+                                }
+                              }
+                            },
+                            "BASIC": {
+                              "type": "object",
+                              "properties": {
+                                "requests": {
+                                  "type": "integer"
+                                },
+                                "hits": {
+                                  "type": "integer"
+                                },
+                                "hitRate": {
+                                  "type": "number"
+                                }
+                              }
+                            },
+                            "PREMIUM": {
+                              "type": "object",
+                              "properties": {
+                                "requests": {
+                                  "type": "integer"
+                                },
+                                "hits": {
+                                  "type": "integer"
+                                },
+                                "hitRate": {
+                                  "type": "number"
+                                }
+                              }
+                            },
+                            "ENTERPRISE": {
+                              "type": "object",
+                              "properties": {
+                                "requests": {
+                                  "type": "integer"
+                                },
+                                "hits": {
+                                  "type": "integer"
+                                },
+                                "hitRate": {
+                                  "type": "number"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/rate-limits/status": {
+      "get": {
+        "operationId": "getRateLimitStatus",
+        "summary": "Get rate limit status for an API key",
+        "tags": ["Rate Limits"],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApiKey"
+          },
+          {
+            "$ref": "#/components/parameters/Tier"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Rate limit status retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "limits": {
+                          "type": "object",
+                          "properties": {
+                            "hourlyLimit": {
+                              "type": "integer"
+                            },
+                            "dailyLimit": {
+                              "type": "integer"
+                            },
+                            "monthlyLimit": {
+                              "type": "integer"
+                            },
+                            "burstLimit": {
+                              "type": "integer"
+                            },
+                            "concurrentLimit": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "current": {
+                          "type": "object",
+                          "properties": {
+                            "hourly": {
+                              "type": "integer"
+                            },
+                            "daily": {
+                              "type": "integer"
+                            },
+                            "monthly": {
+                              "type": "integer"
+                            },
+                            "burstTokens": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "remaining": {
+                          "type": "object",
+                          "properties": {
+                            "hourly": {
+                              "type": "integer"
+                            },
+                            "daily": {
+                              "type": "integer"
+                            },
+                            "monthly": {
+                              "type": "integer"
+                            },
+                            "burstTokens": {
+                              "type": "integer"
+                            }
+                          }
+                        },
+                        "resetAt": {
+                          "type": "object",
+                          "properties": {
+                            "hourly": {
+                              "type": "integer"
+                            },
+                            "daily": {
+                              "type": "integer"
+                            },
+                            "monthly": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/rate-limits/bypass": {
+      "post": {
+        "operationId": "manageBypass",
+        "summary": "Manage bypass list",
+        "tags": ["Rate Limits"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["type", "value", "action"],
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["key", "user"],
+                    "example": "key"
+                  },
+                  "value": {
+                    "type": "string",
+                    "example": "sk_live_abc123"
+                  },
+                  "action": {
+                    "type": "string",
+                    "enum": ["add", "remove"],
+                    "example": "add"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bypass list updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "bypassKeys": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": ["sk_live_abc123", "sk_live_xyz789"]
+                        },
+                        "bypassUsers": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": ["user_123"]
+                        }
+                      }
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/rate-limits/config": {
+      "post": {
+        "operationId": "setCustomRateLimits",
+        "summary": "Set custom rate limits for an API key",
+        "tags": ["Rate Limits"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["apiKey"],
+                "properties": {
+                  "apiKey": {
+                    "type": "string",
+                    "example": "sk_live_abc123"
+                  },
+                  "limits": {
+                    "type": "object",
+                    "properties": {
+                      "hourlyLimit": {
+                        "type": "integer",
+                        "example": 5000
+                      },
+                      "dailyLimit": {
+                        "type": "integer",
+                        "example": 50000
+                      },
+                      "monthlyLimit": {
+                        "type": "integer",
+                        "example": 500000
+                      },
+                      "burstLimit": {
+                        "type": "integer",
+                        "example": 200
+                      },
+                      "concurrentLimit": {
+                        "type": "integer",
+                        "example": 50
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Custom rate limits set successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "apiKey": {
+                          "type": "string",
+                          "example": "sk_live_abc123"
+                        },
+                        "limits": {
+                          "type": "object",
+                          "properties": {
+                            "hourlyLimit": {
+                              "type": "integer"
+                            },
+                            "dailyLimit": {
+                              "type": "integer"
+                            },
+                            "monthlyLimit": {
+                              "type": "integer"
+                            },
+                            "burstLimit": {
+                              "type": "integer"
+                            },
+                            "concurrentLimit": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    },
+    "/purge-user-cache": {
+      "post": {
+        "operationId": "purgeUserCache",
+        "summary": "Purge user-scoped cache entries",
+        "tags": ["Cache"],
+        "parameters": [
+          {
+            "name": "userId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "User identifier",
+            "example": "user_123"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cache purged successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "requestId": {
+                      "type": "string",
+                      "example": "req_abc123"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "500": {
+            "$ref": "#/components/responses/InternalError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key"
+      }
+    },
+    "schemas": {
+      "Plan": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "plan_premium"
+          },
+          "name": {
+            "type": "string",
+            "example": "Premium Plan"
+          },
+          "price": {
+            "type": "number",
+            "example": 29.99
+          },
+          "currency": {
+            "type": "string",
+            "example": "USD"
+          },
+          "billingCycle": {
+            "type": "string",
+            "enum": ["monthly", "yearly"],
+            "example": "monthly"
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["Unlimited subscriptions", "Advanced analytics"]
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "PlanInput": {
+        "type": "object",
+        "required": ["name", "price", "currency", "billingCycle"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Premium Plan"
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0,
+            "example": 29.99
+          },
+          "currency": {
+            "type": "string",
+            "example": "USD"
+          },
+          "billingCycle": {
+            "type": "string",
+            "enum": ["monthly", "yearly"],
+            "example": "monthly"
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["Unlimited subscriptions"]
+          }
+        }
+      },
+      "PlanUpdateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Premium Plan Pro"
+          },
+          "price": {
+            "type": "number",
+            "minimum": 0,
+            "example": 49.99
+          },
+          "currency": {
+            "type": "string",
+            "example": "USD"
+          },
+          "billingCycle": {
+            "type": "string",
+            "enum": ["monthly", "yearly"],
+            "example": "yearly"
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["Unlimited subscriptions", "Advanced analytics", "Priority support"]
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "PricingTier": {
+        "type": "object",
+        "properties": {
+          "planId": {
+            "type": "string",
+            "example": "premium"
+          },
+          "monthlyPrice": {
+            "type": "number",
+            "example": 29.99
+          },
+          "yearlyPrice": {
+            "type": "number",
+            "example": 299.99
+          },
+          "currency": {
+            "type": "string",
+            "example": "USD"
+          },
+          "discountPercent": {
+            "type": "number",
+            "example": 17
+          }
+        }
+      },
+      "PricingUpdateInput": {
+        "type": "object",
+        "properties": {
+          "monthlyPrice": {
+            "type": "number",
+            "minimum": 0,
+            "example": 39.99
+          },
+          "yearlyPrice": {
+            "type": "number",
+            "minimum": 0,
+            "example": 399.99
+          },
+          "discountPercent": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "example": 20
+          }
+        }
+      },
+      "Feature": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "advanced_analytics"
+          },
+          "name": {
+            "type": "string",
+            "example": "Advanced Analytics"
+          },
+          "enabled": {
+            "type": "boolean",
+            "example": true
+          },
+          "tierAccess": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ["PREMIUM", "ENTERPRISE"]
+          }
+        }
+      },
+      "FeatureUpdateInput": {
+        "type": "object",
+        "required": ["enabled"],
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "Theme": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "theme_dark"
+          },
+          "merchantId": {
+            "type": "string",
+            "example": "merchant_123"
+          },
+          "name": {
+            "type": "string",
+            "example": "Dark Theme"
+          },
+          "config": {
+            "type": "object",
+            "example": {
+              "primaryColor": "#1a1a2e",
+              "secondaryColor": "#16213e",
+              "fontFamily": "Inter"
+            }
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ThemeInput": {
+        "type": "object",
+        "required": ["id", "name", "config"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "theme_dark"
+          },
+          "name": {
+            "type": "string",
+            "example": "Dark Theme"
+          },
+          "config": {
+            "type": "object",
+            "example": {
+              "primaryColor": "#1a1a2e",
+              "secondaryColor": "#16213e",
+              "fontFamily": "Inter"
+            }
+          }
+        }
+      },
+      "ThemeUpdateInput": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Light Theme"
+          },
+          "config": {
+            "type": "object",
+            "example": {
+              "primaryColor": "#ffffff",
+              "secondaryColor": "#f0f0f0",
+              "fontFamily": "Inter"
+            }
+          },
+          "isActive": {
+            "type": "boolean",
+            "example": true
+          }
+        }
+      },
+      "ConfigEntry": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "example": "app/version"
+          },
+          "value": {
+            "type": "object",
+            "example": {
+              "minSupported": "1.0.0",
+              "latest": "1.0.0"
+            }
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Plan not found"
+              }
+            }
+          },
+          "status": {
+            "type": "integer",
+            "example": 404
+          },
+          "requestId": {
+            "type": "string",
+            "example": "req_abc123"
+          }
+        }
+      },
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "type": "object"
+          },
+          "requestId": {
+            "type": "string",
+            "example": "req_abc123"
+          }
+        }
+      }
+    },
+    "parameters": {
+      "PlanId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Plan identifier",
+        "example": "plan_premium"
+      },
+      "ThemeId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "Theme identifier",
+        "example": "theme_dark"
+      },
+      "MerchantId": {
+        "name": "x-merchant-id",
+        "in": "header",
+        "schema": {
+          "type": "string"
+        },
+        "description": "Merchant identifier for multi-tenant isolation",
+        "example": "merchant_123"
+      },
+      "ApiKey": {
+        "name": "apiKey",
+        "in": "query",
+        "required": true,
+        "schema": {
+          "type": "string"
+        },
+        "description": "API key for rate limit status check",
+        "example": "sk_live_abc123"
+      },
+      "Tier": {
+        "name": "tier",
+        "in": "query",
+        "schema": {
+          "type": "string",
+          "enum": ["FREE", "BASIC", "PREMIUM", "ENTERPRISE"]
+        },
+        "description": "Subscription tier filter",
+        "example": "PREMIUM"
+      }
+    },
+    "responses": {
+      "NotFound": {
+        "description": "Resource not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "success": false,
+              "error": {
+                "message": "Plan not found"
+              },
+              "status": 404,
+              "requestId": "req_abc123"
+            }
+          }
+        }
+      },
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "success": false,
+              "error": {
+                "message": "Missing required field: name"
+              },
+              "status": 400,
+              "requestId": "req_abc123"
+            }
+          }
+        }
+      },
+      "InternalError": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorResponse"
+            },
+            "example": {
+              "success": false,
+              "error": {
+                "message": "Internal server error"
+              },
+              "status": 500,
+              "requestId": "req_abc123"
+            }
+          }
+        }
+      }
+    }
+  }
+}

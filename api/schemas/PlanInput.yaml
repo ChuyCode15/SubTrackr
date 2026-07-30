@@ -1,0 +1,26 @@
+type: object
+required:
+  - name
+  - price
+  - currency
+  - billingCycle
+properties:
+  name:
+    type: string
+    example: "Premium Plan"
+  price:
+    type: number
+    minimum: 0
+    example: 29.99
+  currency:
+    type: string
+    example: "USD"
+  billingCycle:
+    type: string
+    enum: [monthly, yearly]
+    example: "monthly"
+  features:
+    type: array
+    items:
+      type: string
+    example: ["Unlimited subscriptions"]

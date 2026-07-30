@@ -1,0 +1,27 @@
+post:
+  operationId: activateTheme
+  summary: Activate a theme
+  tags: [Themes]
+  parameters:
+    - $ref: '../parameters/MerchantId.yaml'
+    - $ref: '../parameters/ThemeId.yaml'
+  responses:
+    '200':
+      description: Theme activated successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                $ref: '../schemas/Theme.yaml'
+              requestId:
+                type: string
+                example: "req_abc123"
+    '404':
+      $ref: '../responses/NotFound.yaml'
+    '500':
+      $ref: '../responses/InternalError.yaml'

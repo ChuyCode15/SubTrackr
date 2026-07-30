@@ -1,0 +1,24 @@
+get:
+  operationId: getFeatures
+  summary: Get public feature flags
+  tags: [Features]
+  responses:
+    '200':
+      description: Feature flags retrieved successfully
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                example: true
+              data:
+                type: array
+                items:
+                  $ref: '../schemas/Feature.yaml'
+              requestId:
+                type: string
+                example: "req_abc123"
+    '500':
+      $ref: '../responses/InternalError.yaml'
