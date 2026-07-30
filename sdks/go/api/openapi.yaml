@@ -1,0 +1,2108 @@
+openapi: 3.0.0
+info:
+  contact:
+    email: support@subtrackr.com
+    name: SubTrackr Team
+  description: Subscription management platform API
+  title: SubTrackr API
+  version: 1.0.0
+servers:
+- description: Production
+  url: https://api.subtrackr.com/v1
+- description: Local Development
+  url: http://localhost:3001
+security:
+- ApiKeyAuth: []
+tags:
+- description: Subscription plan management
+  name: Plans
+- description: Pricing tiers and discounts
+  name: Pricing
+- description: Feature flags and gating
+  name: Features
+- description: Merchant theme customization
+  name: Themes
+- description: Public configuration endpoints
+  name: Public
+- description: Service health checks
+  name: Health
+- description: GraphQL API endpoint
+  name: GraphQL
+- description: Prometheus metrics
+  name: Metrics
+- description: Rate limit management
+  name: Rate Limits
+- description: Cache management
+  name: Cache
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getHealth_200_response"
+          description: Service healthy
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      security: []
+      summary: Health check
+      tags:
+      - Health
+  /plans:
+    get:
+      operationId: listPlans
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/listPlans_200_response"
+          description: List of plans
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: List all subscription plans
+      tags:
+      - Plans
+    post:
+      operationId: createPlan
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlanInput"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createPlan_201_response"
+          description: Plan created successfully
+        "400":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: "Missing required field: name"
+                status: 400
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Create a new subscription plan
+      tags:
+      - Plans
+  /plans/{id}:
+    delete:
+      operationId: deactivatePlan
+      parameters:
+      - description: Plan identifier
+        example: plan_premium
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createPlan_201_response"
+          description: Plan deactivated successfully
+        "404":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Plan not found
+                status: 404
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Deactivate a plan
+      tags:
+      - Plans
+    get:
+      operationId: getPlanById
+      parameters:
+      - description: Plan identifier
+        example: plan_premium
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createPlan_201_response"
+          description: Plan found
+        "404":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Plan not found
+                status: 404
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Get a plan by ID
+      tags:
+      - Plans
+    patch:
+      operationId: updatePlan
+      parameters:
+      - description: Plan identifier
+        example: plan_premium
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PlanUpdateInput"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createPlan_201_response"
+          description: Plan updated successfully
+        "400":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: "Missing required field: name"
+                status: 400
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Plan not found
+                status: 404
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Update a plan
+      tags:
+      - Plans
+  /pricing:
+    get:
+      operationId: getPublicPricing
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getPublicPricing_200_response"
+          description: Pricing tiers retrieved successfully
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Get public pricing tiers
+      tags:
+      - Pricing
+  /features:
+    get:
+      operationId: getFeatures
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getFeatures_200_response"
+          description: Feature flags retrieved successfully
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Get public feature flags
+      tags:
+      - Features
+  /themes:
+    get:
+      operationId: getThemes
+      parameters:
+      - description: Merchant identifier for multi-tenant isolation
+        example: merchant_123
+        in: header
+        name: x-merchant-id
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getThemes_200_response"
+          description: List of themes
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: List themes for merchant
+      tags:
+      - Themes
+    post:
+      operationId: createTheme
+      parameters:
+      - description: Merchant identifier for multi-tenant isolation
+        example: merchant_123
+        in: header
+        name: x-merchant-id
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ThemeInput"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createTheme_201_response"
+          description: Theme created successfully
+        "400":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: "Missing required field: name"
+                status: 400
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Create a new theme
+      tags:
+      - Themes
+  /themes/{id}:
+    delete:
+      operationId: deleteTheme
+      parameters:
+      - description: Theme identifier
+        example: theme_dark
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/deleteTheme_200_response"
+          description: Theme deleted successfully
+        "404":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Plan not found
+                status: 404
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Delete a theme
+      tags:
+      - Themes
+    get:
+      operationId: getThemeById
+      parameters:
+      - description: Theme identifier
+        example: theme_dark
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createTheme_201_response"
+          description: Theme found
+        "404":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Plan not found
+                status: 404
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Get theme by ID
+      tags:
+      - Themes
+    patch:
+      operationId: updateTheme
+      parameters:
+      - description: Theme identifier
+        example: theme_dark
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ThemeUpdateInput"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createTheme_201_response"
+          description: Theme updated successfully
+        "400":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: "Missing required field: name"
+                status: 400
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "404":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Plan not found
+                status: 404
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Update a theme
+      tags:
+      - Themes
+  /themes/{id}/activate:
+    post:
+      operationId: activateTheme
+      parameters:
+      - description: Merchant identifier for multi-tenant isolation
+        example: merchant_123
+        in: header
+        name: x-merchant-id
+        schema:
+          type: string
+      - description: Theme identifier
+        example: theme_dark
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createTheme_201_response"
+          description: Theme activated successfully
+        "404":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Plan not found
+                status: 404
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Activate a theme
+      tags:
+      - Themes
+  /public/{path}:
+    get:
+      operationId: getPublicConfig
+      parameters:
+      - description: "Configuration path (e.g., app/version)"
+        example: app/version
+        in: path
+        name: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              examples:
+                single:
+                  value:
+                    success: true
+                    data:
+                      key: app/version
+                      value:
+                        minSupported: 1.0.0
+                        latest: 1.0.0
+                list:
+                  value:
+                    success: true
+                    data:
+                    - key: app/version
+                      value:
+                        minSupported: 1.0.0
+                        latest: 1.0.0
+                    - key: app/support
+                      value:
+                        email: support@subtrackr.com
+              schema:
+                $ref: "#/components/schemas/getPublicConfig_200_response"
+          description: Configuration retrieved successfully
+        "404":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Plan not found
+                status: 404
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Resource not found
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Get public configuration
+      tags:
+      - Public
+  /graphql:
+    post:
+      operationId: graphqlQuery
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/graphqlQuery_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/graphqlQuery_200_response"
+          description: GraphQL response
+        "400":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: "Missing required field: name"
+                status: 400
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: GraphQL endpoint
+      tags:
+      - GraphQL
+  /metrics/plan-cache:
+    get:
+      operationId: getPlanCacheMetrics
+      responses:
+        "200":
+          content:
+            text/plain:
+              example: |
+                # HELP plan_cache_hits_total Total plan cache hits
+                # TYPE plan_cache_hits_total counter
+                plan_cache_hits_total 12345
+                # HELP plan_cache_misses_total Total plan cache misses
+                # TYPE plan_cache_misses_total counter
+                plan_cache_misses_total 678
+              schema:
+                type: string
+          description: Prometheus metrics
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      security: []
+      summary: Prometheus metrics for plan cache
+      tags:
+      - Metrics
+  /rate-limits/analytics:
+    get:
+      operationId: getRateLimitAnalytics
+      parameters:
+      - description: Subscription tier filter
+        example: PREMIUM
+        in: query
+        name: tier
+        schema:
+          enum:
+          - FREE
+          - BASIC
+          - PREMIUM
+          - ENTERPRISE
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getRateLimitAnalytics_200_response"
+          description: Rate limit analytics retrieved successfully
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Get rate limit analytics
+      tags:
+      - Rate Limits
+  /rate-limits/status:
+    get:
+      operationId: getRateLimitStatus
+      parameters:
+      - description: API key for rate limit status check
+        example: sk_live_abc123
+        in: query
+        name: apiKey
+        required: true
+        schema:
+          type: string
+      - description: Subscription tier filter
+        example: PREMIUM
+        in: query
+        name: tier
+        schema:
+          enum:
+          - FREE
+          - BASIC
+          - PREMIUM
+          - ENTERPRISE
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getRateLimitStatus_200_response"
+          description: Rate limit status retrieved successfully
+        "400":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: "Missing required field: name"
+                status: 400
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Get rate limit status for an API key
+      tags:
+      - Rate Limits
+  /rate-limits/bypass:
+    post:
+      operationId: manageBypass
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/manageBypass_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/manageBypass_200_response"
+          description: Bypass list updated successfully
+        "400":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: "Missing required field: name"
+                status: 400
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Manage bypass list
+      tags:
+      - Rate Limits
+  /rate-limits/config:
+    post:
+      operationId: setCustomRateLimits
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/setCustomRateLimits_request"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/setCustomRateLimits_200_response"
+          description: Custom rate limits set successfully
+        "400":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: "Missing required field: name"
+                status: 400
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Set custom rate limits for an API key
+      tags:
+      - Rate Limits
+  /purge-user-cache:
+    post:
+      operationId: purgeUserCache
+      parameters:
+      - description: User identifier
+        example: user_123
+        in: query
+        name: userId
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/purgeUserCache_200_response"
+          description: Cache purged successfully
+        "400":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: "Missing required field: name"
+                status: 400
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Bad request
+        "500":
+          content:
+            application/json:
+              example:
+                success: false
+                error:
+                  message: Internal server error
+                status: 500
+                requestId: req_abc123
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+          description: Internal server error
+      summary: Purge user-scoped cache entries
+      tags:
+      - Cache
+components:
+  parameters:
+    PlanId:
+      description: Plan identifier
+      example: plan_premium
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+    ThemeId:
+      description: Theme identifier
+      example: theme_dark
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+    MerchantId:
+      description: Merchant identifier for multi-tenant isolation
+      example: merchant_123
+      in: header
+      name: x-merchant-id
+      schema:
+        type: string
+    ApiKey:
+      description: API key for rate limit status check
+      example: sk_live_abc123
+      in: query
+      name: apiKey
+      required: true
+      schema:
+        type: string
+    Tier:
+      description: Subscription tier filter
+      example: PREMIUM
+      in: query
+      name: tier
+      schema:
+        enum:
+        - FREE
+        - BASIC
+        - PREMIUM
+        - ENTERPRISE
+        type: string
+  responses:
+    NotFound:
+      content:
+        application/json:
+          example:
+            success: false
+            error:
+              message: Plan not found
+            status: 404
+            requestId: req_abc123
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+      description: Resource not found
+    BadRequest:
+      content:
+        application/json:
+          example:
+            success: false
+            error:
+              message: "Missing required field: name"
+            status: 400
+            requestId: req_abc123
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+      description: Bad request
+    InternalError:
+      content:
+        application/json:
+          example:
+            success: false
+            error:
+              message: Internal server error
+            status: 500
+            requestId: req_abc123
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+      description: Internal server error
+  schemas:
+    Plan:
+      example:
+        id: plan_premium
+        name: Premium Plan
+        price: 29.99
+        currency: USD
+        billingCycle: monthly
+        features:
+        - Unlimited subscriptions
+        - Advanced analytics
+        isActive: true
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          example: plan_premium
+          type: string
+        name:
+          example: Premium Plan
+          type: string
+        price:
+          example: 29.99
+          type: number
+        currency:
+          example: USD
+          type: string
+        billingCycle:
+          enum:
+          - monthly
+          - yearly
+          example: monthly
+          type: string
+        features:
+          example:
+          - Unlimited subscriptions
+          - Advanced analytics
+          items:
+            type: string
+          type: array
+        isActive:
+          example: true
+          type: boolean
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      type: object
+    PlanInput:
+      example:
+        name: Premium Plan
+        price: 29.99
+        currency: USD
+        billingCycle: monthly
+        features:
+        - Unlimited subscriptions
+      properties:
+        name:
+          example: Premium Plan
+          type: string
+        price:
+          example: 29.99
+          minimum: 0
+          type: number
+        currency:
+          example: USD
+          type: string
+        billingCycle:
+          enum:
+          - monthly
+          - yearly
+          example: monthly
+          type: string
+        features:
+          example:
+          - Unlimited subscriptions
+          items:
+            type: string
+          type: array
+      required:
+      - billingCycle
+      - currency
+      - name
+      - price
+      type: object
+    PlanUpdateInput:
+      example:
+        name: Premium Plan Pro
+        price: 49.99
+        currency: USD
+        billingCycle: yearly
+        features:
+        - Unlimited subscriptions
+        - Advanced analytics
+        - Priority support
+        isActive: true
+      properties:
+        name:
+          example: Premium Plan Pro
+          type: string
+        price:
+          example: 49.99
+          minimum: 0
+          type: number
+        currency:
+          example: USD
+          type: string
+        billingCycle:
+          enum:
+          - monthly
+          - yearly
+          example: yearly
+          type: string
+        features:
+          example:
+          - Unlimited subscriptions
+          - Advanced analytics
+          - Priority support
+          items:
+            type: string
+          type: array
+        isActive:
+          example: true
+          type: boolean
+      type: object
+    PricingTier:
+      example:
+        planId: premium
+        monthlyPrice: 29.99
+        yearlyPrice: 299.99
+        currency: USD
+        discountPercent: 17
+      properties:
+        planId:
+          example: premium
+          type: string
+        monthlyPrice:
+          example: 29.99
+          type: number
+        yearlyPrice:
+          example: 299.99
+          type: number
+        currency:
+          example: USD
+          type: string
+        discountPercent:
+          example: 17
+          type: number
+      type: object
+    PricingUpdateInput:
+      properties:
+        monthlyPrice:
+          example: 39.99
+          minimum: 0
+          type: number
+        yearlyPrice:
+          example: 399.99
+          minimum: 0
+          type: number
+        discountPercent:
+          example: 20
+          maximum: 100
+          minimum: 0
+          type: number
+      type: object
+    Feature:
+      example:
+        id: advanced_analytics
+        name: Advanced Analytics
+        enabled: true
+        tierAccess:
+        - PREMIUM
+        - ENTERPRISE
+      properties:
+        id:
+          example: advanced_analytics
+          type: string
+        name:
+          example: Advanced Analytics
+          type: string
+        enabled:
+          example: true
+          type: boolean
+        tierAccess:
+          example:
+          - PREMIUM
+          - ENTERPRISE
+          items:
+            type: string
+          type: array
+      type: object
+    FeatureUpdateInput:
+      properties:
+        enabled:
+          example: true
+          type: boolean
+      required:
+      - enabled
+      type: object
+    Theme:
+      example:
+        id: theme_dark
+        merchantId: merchant_123
+        name: Dark Theme
+        config:
+          primaryColor: "#1a1a2e"
+          secondaryColor: "#16213e"
+          fontFamily: Inter
+        isActive: true
+        createdAt: 2000-01-23T04:56:07.000+00:00
+        updatedAt: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          example: theme_dark
+          type: string
+        merchantId:
+          example: merchant_123
+          type: string
+        name:
+          example: Dark Theme
+          type: string
+        config:
+          example:
+            primaryColor: "#1a1a2e"
+            secondaryColor: "#16213e"
+            fontFamily: Inter
+          type: object
+        isActive:
+          example: true
+          type: boolean
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      type: object
+    ThemeInput:
+      example:
+        id: theme_dark
+        name: Dark Theme
+        config:
+          primaryColor: "#1a1a2e"
+          secondaryColor: "#16213e"
+          fontFamily: Inter
+      properties:
+        id:
+          example: theme_dark
+          type: string
+        name:
+          example: Dark Theme
+          type: string
+        config:
+          example:
+            primaryColor: "#1a1a2e"
+            secondaryColor: "#16213e"
+            fontFamily: Inter
+          type: object
+      required:
+      - config
+      - id
+      - name
+      type: object
+    ThemeUpdateInput:
+      example:
+        name: Light Theme
+        config:
+          primaryColor: "#ffffff"
+          secondaryColor: "#f0f0f0"
+          fontFamily: Inter
+        isActive: true
+      properties:
+        name:
+          example: Light Theme
+          type: string
+        config:
+          example:
+            primaryColor: "#ffffff"
+            secondaryColor: "#f0f0f0"
+            fontFamily: Inter
+          type: object
+        isActive:
+          example: true
+          type: boolean
+      type: object
+    ConfigEntry:
+      example:
+        key: app/version
+        value:
+          minSupported: 1.0.0
+          latest: 1.0.0
+      properties:
+        key:
+          example: app/version
+          type: string
+        value:
+          example:
+            minSupported: 1.0.0
+            latest: 1.0.0
+          type: object
+      type: object
+    ErrorResponse:
+      example:
+        success: false
+        error:
+          message: Plan not found
+        status: 404
+        requestId: req_abc123
+      properties:
+        success:
+          example: false
+          type: boolean
+        error:
+          $ref: "#/components/schemas/ErrorResponse_error"
+        status:
+          example: 404
+          type: integer
+        requestId:
+          example: req_abc123
+          type: string
+      type: object
+    SuccessResponse:
+      properties:
+        success:
+          example: true
+          type: boolean
+        data:
+          type: object
+        requestId:
+          example: req_abc123
+          type: string
+      type: object
+    getHealth_200_response:
+      example:
+        status: ok
+        planCache: redis
+      properties:
+        status:
+          example: ok
+          type: string
+        planCache:
+          enum:
+          - redis
+          - degraded
+          example: redis
+          type: string
+      type: object
+    listPlans_200_response:
+      example:
+        success: true
+        data:
+        - id: plan_premium
+          name: Premium Plan
+          price: 29.99
+          currency: USD
+          billingCycle: monthly
+          features:
+          - Unlimited subscriptions
+          - Advanced analytics
+          isActive: true
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        - id: plan_premium
+          name: Premium Plan
+          price: 29.99
+          currency: USD
+          billingCycle: monthly
+          features:
+          - Unlimited subscriptions
+          - Advanced analytics
+          isActive: true
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        requestId: req_abc123
+      properties:
+        success:
+          example: true
+          type: boolean
+        data:
+          items:
+            $ref: "#/components/schemas/Plan"
+          type: array
+        requestId:
+          example: req_abc123
+          type: string
+      type: object
+    createPlan_201_response:
+      example:
+        success: true
+        data:
+          id: plan_premium
+          name: Premium Plan
+          price: 29.99
+          currency: USD
+          billingCycle: monthly
+          features:
+          - Unlimited subscriptions
+          - Advanced analytics
+          isActive: true
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        requestId: req_abc123
+      properties:
+        success:
+          example: true
+          type: boolean
+        data:
+          $ref: "#/components/schemas/Plan"
+        requestId:
+          example: req_abc123
+          type: string
+      type: object
+    getPublicPricing_200_response:
+      example:
+        success: true
+        data:
+        - planId: premium
+          monthlyPrice: 29.99
+          yearlyPrice: 299.99
+          currency: USD
+          discountPercent: 17
+        - planId: premium
+          monthlyPrice: 29.99
+          yearlyPrice: 299.99
+          currency: USD
+          discountPercent: 17
+        requestId: req_abc123
+      properties:
+        success:
+          example: true
+          type: boolean
+        data:
+          items:
+            $ref: "#/components/schemas/PricingTier"
+          type: array
+        requestId:
+          example: req_abc123
+          type: string
+      type: object
+    getFeatures_200_response:
+      example:
+        success: true
+        data:
+        - id: advanced_analytics
+          name: Advanced Analytics
+          enabled: true
+          tierAccess:
+          - PREMIUM
+          - ENTERPRISE
+        - id: advanced_analytics
+          name: Advanced Analytics
+          enabled: true
+          tierAccess:
+          - PREMIUM
+          - ENTERPRISE
+        requestId: req_abc123
+      properties:
+        success:
+          example: true
+          type: boolean
+        data:
+          items:
+            $ref: "#/components/schemas/Feature"
+          type: array
+        requestId:
+          example: req_abc123
+          type: string
+      type: object
+    getThemes_200_response:
+      example:
+        success: true
+        data:
+        - id: theme_dark
+          merchantId: merchant_123
+          name: Dark Theme
+          config:
+            primaryColor: "#1a1a2e"
+            secondaryColor: "#16213e"
+            fontFamily: Inter
+          isActive: true
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        - id: theme_dark
+          merchantId: merchant_123
+          name: Dark Theme
+          config:
+            primaryColor: "#1a1a2e"
+            secondaryColor: "#16213e"
+            fontFamily: Inter
+          isActive: true
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        requestId: req_abc123
+      properties:
+        success:
+          example: true
+          type: boolean
+        data:
+          items:
+            $ref: "#/components/schemas/Theme"
+          type: array
+        requestId:
+          example: req_abc123
+          type: string
+      type: object
+    createTheme_201_response:
+      example:
+        success: true
+        data:
+          id: theme_dark
+          merchantId: merchant_123
+          name: Dark Theme
+          config:
+            primaryColor: "#1a1a2e"
+            secondaryColor: "#16213e"
+            fontFamily: Inter
+          isActive: true
+          createdAt: 2000-01-23T04:56:07.000+00:00
+          updatedAt: 2000-01-23T04:56:07.000+00:00
+        requestId: req_abc123
+      properties:
+        success:
+          example: true
+          type: boolean
+        data:
+          $ref: "#/components/schemas/Theme"
+        requestId:
+          example: req_abc123
+          type: string
+      type: object
+    deleteTheme_200_response_data:
+      example:
+        deleted: true
+      properties:
+        deleted:
+          example: true
+          type: boolean
+      type: object
+    deleteTheme_200_response:
+      example:
+        success: true
+        data:
+          deleted: true
+        requestId: req_abc123
+      properties:
+        success:
+          example: true
+          type: boolean
+        data:
+          $ref: "#/components/schemas/deleteTheme_200_response_data"
+        requestId:
+          example: req_abc123
+          type: string
+      type: object
+    getPublicConfig_200_response_data:
+      oneOf:
+      - $ref: "#/components/schemas/ConfigEntry"
+      - items:
+          $ref: "#/components/schemas/ConfigEntry"
+        type: array
+    getPublicConfig_200_response:
+      example:
+        success: true
+        data:
+          key: app/version
+          value:
+            minSupported: 1.0.0
+            latest: 1.0.0
+        requestId: req_abc123
+      properties:
+        success:
+          example: true
+          type: boolean
+        data:
+          $ref: "#/components/schemas/getPublicConfig_200_response_data"
+        requestId:
+          example: req_abc123
+          type: string
+      type: object
+    graphqlQuery_request:
+      properties:
+        query:
+          example: |
+            query {
+              plans {
+                id
+                name
+                price
+              }
+            }
+          type: string
+        variables:
+          example: {}
+          type: object
+      type: object
+    graphqlQuery_200_response_errors_inner:
+      example:
+        message: message
+      properties:
+        message:
+          type: string
+      type: object
+    graphqlQuery_200_response:
+      example:
+        data: "{}"
+        errors:
+        - message: message
+        - message: message
+      properties:
+        data:
+          type: object
+        errors:
+          items:
+            $ref: "#/components/schemas/graphqlQuery_200_response_errors_inner"
+          type: array
+      type: object
+    getRateLimitAnalytics_200_response_data_topThrottledKeys_inner:
+      example:
+        key: key
+        hits: 0
+      properties:
+        key:
+          type: string
+        hits:
+          type: integer
+      type: object
+    getRateLimitAnalytics_200_response_data_topThrottledEndpoints_inner:
+      example:
+        endpoint: endpoint
+        hits: 6
+      properties:
+        endpoint:
+          type: string
+        hits:
+          type: integer
+      type: object
+    getRateLimitAnalytics_200_response_data_byTier_FREE:
+      example:
+        requests: 1
+        hits: 5
+        hitRate: 5.637376656633329
+      properties:
+        requests:
+          type: integer
+        hits:
+          type: integer
+        hitRate:
+          type: number
+      type: object
+    getRateLimitAnalytics_200_response_data_byTier:
+      example:
+        FREE:
+          requests: 1
+          hits: 5
+          hitRate: 5.637376656633329
+        BASIC:
+          requests: 1
+          hits: 5
+          hitRate: 5.637376656633329
+        PREMIUM:
+          requests: 1
+          hits: 5
+          hitRate: 5.637376656633329
+        ENTERPRISE:
+          requests: 1
+          hits: 5
+          hitRate: 5.637376656633329
+      properties:
+        FREE:
+          $ref: "#/components/schemas/getRateLimitAnalytics_200_response_data_byTier_FREE"
+        BASIC:
+          $ref: "#/components/schemas/getRateLimitAnalytics_200_response_data_byTier_FREE"
+        PREMIUM:
+          $ref: "#/components/schemas/getRateLimitAnalytics_200_response_data_byTier_FREE"
+        ENTERPRISE:
+          $ref: "#/components/schemas/getRateLimitAnalytics_200_response_data_byTier_FREE"
+      type: object
+    getRateLimitAnalytics_200_response_data:
+      example:
+        totalRequests: 12345
+        rateLimitHits: 123
+        hitRate: 0.01
+        topThrottledKeys:
+        - key: key
+          hits: 0
+        - key: key
+          hits: 0
+        topThrottledEndpoints:
+        - endpoint: endpoint
+          hits: 6
+        - endpoint: endpoint
+          hits: 6
+        byTier:
+          FREE:
+            requests: 1
+            hits: 5
+            hitRate: 5.637376656633329
+          BASIC:
+            requests: 1
+            hits: 5
+            hitRate: 5.637376656633329
+          PREMIUM:
+            requests: 1
+            hits: 5
+            hitRate: 5.637376656633329
+          ENTERPRISE:
+            requests: 1
+            hits: 5
+            hitRate: 5.637376656633329
+      properties:
+        totalRequests:
+          example: 12345
+          type: integer
+        rateLimitHits:
+          example: 123
+          type: integer
+        hitRate:
+          example: 0.01
+          type: number
+        topThrottledKeys:
+          items:
+            $ref: "#/components/schemas/getRateLimitAnalytics_200_response_data_topThrottledKeys_inner"
+          type: array
+        topThrottledEndpoints:
+          items:
+            $ref: "#/components/schemas/getRateLimitAnalytics_200_response_data_topThrottledEndpoints_inner"
+          type: array
+        byTier:
+          $ref: "#/components/schemas/getRateLimitAnalytics_200_response_data_byTier"
+      type: object
+    getRateLimitAnalytics_200_response:
+      example:
+        success: true
+        data:
+          totalRequests: 12345
+          rateLimitHits: 123
+          hitRate: 0.01
+          topThrottledKeys:
+          - key: key
+            hits: 0
+          - key: key
+            hits: 0
+          topThrottledEndpoints:
+          - endpoint: endpoint
+            hits: 6
+          - endpoint: endpoint
+            hits: 6
+          byTier:
+            FREE:
+              requests: 1
+              hits: 5
+              hitRate: 5.637376656633329
+            BASIC:
+              requests: 1
+              hits: 5
+              hitRate: 5.637376656633329
+            PREMIUM:
+              requests: 1
+              hits: 5
+              hitRate: 5.637376656633329
+            ENTERPRISE:
+              requests: 1
+              hits: 5
+              hitRate: 5.637376656633329
+        requestId: req_abc123
+      properties:
+        success:
+          example: true
+          type: boolean
+        data:
+          $ref: "#/components/schemas/getRateLimitAnalytics_200_response_data"
+        requestId:
+          example: req_abc123
+          type: string
+      type: object
+    getRateLimitStatus_200_response_data_limits:
+      example:
+        hourlyLimit: 0
+        dailyLimit: 6
+        monthlyLimit: 1
+        burstLimit: 5
+        concurrentLimit: 5
+      properties:
+        hourlyLimit:
+          type: integer
+        dailyLimit:
+          type: integer
+        monthlyLimit:
+          type: integer
+        burstLimit:
+          type: integer
+        concurrentLimit:
+          type: integer
+      type: object
+    getRateLimitStatus_200_response_data_current:
+      example:
+        hourly: 2
+        daily: 7
+        monthly: 9
+        burstTokens: 3
+      properties:
+        hourly:
+          type: integer
+        daily:
+          type: integer
+        monthly:
+          type: integer
+        burstTokens:
+          type: integer
+      type: object
+    getRateLimitStatus_200_response_data_resetAt:
+      example:
+        hourly: 2
+        daily: 4
+        monthly: 7
+      properties:
+        hourly:
+          type: integer
+        daily:
+          type: integer
+        monthly:
+          type: integer
+      type: object
+    getRateLimitStatus_200_response_data:
+      example:
+        limits:
+          hourlyLimit: 0
+          dailyLimit: 6
+          monthlyLimit: 1
+          burstLimit: 5
+          concurrentLimit: 5
+        current:
+          hourly: 2
+          daily: 7
+          monthly: 9
+          burstTokens: 3
+        remaining:
+          hourly: 2
+          daily: 7
+          monthly: 9
+          burstTokens: 3
+        resetAt:
+          hourly: 2
+          daily: 4
+          monthly: 7
+      properties:
+        limits:
+          $ref: "#/components/schemas/getRateLimitStatus_200_response_data_limits"
+        current:
+          $ref: "#/components/schemas/getRateLimitStatus_200_response_data_current"
+        remaining:
+          $ref: "#/components/schemas/getRateLimitStatus_200_response_data_current"
+        resetAt:
+          $ref: "#/components/schemas/getRateLimitStatus_200_response_data_resetAt"
+      type: object
+    getRateLimitStatus_200_response:
+      example:
+        success: true
+        data:
+          limits:
+            hourlyLimit: 0
+            dailyLimit: 6
+            monthlyLimit: 1
+            burstLimit: 5
+            concurrentLimit: 5
+          current:
+            hourly: 2
+            daily: 7
+            monthly: 9
+            burstTokens: 3
+          remaining:
+            hourly: 2
+            daily: 7
+            monthly: 9
+            burstTokens: 3
+          resetAt:
+            hourly: 2
+            daily: 4
+            monthly: 7
+        requestId: req_abc123
+      properties:
+        success:
+          example: true
+          type: boolean
+        data:
+          $ref: "#/components/schemas/getRateLimitStatus_200_response_data"
+        requestId:
+          example: req_abc123
+          type: string
+      type: object
+    manageBypass_request:
+      properties:
+        type:
+          enum:
+          - key
+          - user
+          example: key
+          type: string
+        value:
+          example: sk_live_abc123
+          type: string
+        action:
+          enum:
+          - add
+          - remove
+          example: add
+          type: string
+      required:
+      - action
+      - type
+      - value
+      type: object
+    manageBypass_200_response_data:
+      example:
+        bypassKeys:
+        - sk_live_abc123
+        - sk_live_xyz789
+        bypassUsers:
+        - user_123
+      properties:
+        bypassKeys:
+          example:
+          - sk_live_abc123
+          - sk_live_xyz789
+          items:
+            type: string
+          type: array
+        bypassUsers:
+          example:
+          - user_123
+          items:
+            type: string
+          type: array
+      type: object
+    manageBypass_200_response:
+      example:
+        success: true
+        data:
+          bypassKeys:
+          - sk_live_abc123
+          - sk_live_xyz789
+          bypassUsers:
+          - user_123
+        requestId: req_abc123
+      properties:
+        success:
+          example: true
+          type: boolean
+        data:
+          $ref: "#/components/schemas/manageBypass_200_response_data"
+        requestId:
+          example: req_abc123
+          type: string
+      type: object
+    setCustomRateLimits_request_limits:
+      properties:
+        hourlyLimit:
+          example: 5000
+          type: integer
+        dailyLimit:
+          example: 50000
+          type: integer
+        monthlyLimit:
+          example: 500000
+          type: integer
+        burstLimit:
+          example: 200
+          type: integer
+        concurrentLimit:
+          example: 50
+          type: integer
+      type: object
+    setCustomRateLimits_request:
+      properties:
+        apiKey:
+          example: sk_live_abc123
+          type: string
+        limits:
+          $ref: "#/components/schemas/setCustomRateLimits_request_limits"
+      required:
+      - apiKey
+      type: object
+    setCustomRateLimits_200_response_data:
+      example:
+        apiKey: sk_live_abc123
+        limits:
+          hourlyLimit: 0
+          dailyLimit: 6
+          monthlyLimit: 1
+          burstLimit: 5
+          concurrentLimit: 5
+      properties:
+        apiKey:
+          example: sk_live_abc123
+          type: string
+        limits:
+          $ref: "#/components/schemas/getRateLimitStatus_200_response_data_limits"
+      type: object
+    setCustomRateLimits_200_response:
+      example:
+        success: true
+        data:
+          apiKey: sk_live_abc123
+          limits:
+            hourlyLimit: 0
+            dailyLimit: 6
+            monthlyLimit: 1
+            burstLimit: 5
+            concurrentLimit: 5
+        requestId: req_abc123
+      properties:
+        success:
+          example: true
+          type: boolean
+        data:
+          $ref: "#/components/schemas/setCustomRateLimits_200_response_data"
+        requestId:
+          example: req_abc123
+          type: string
+      type: object
+    purgeUserCache_200_response:
+      example:
+        success: true
+        requestId: req_abc123
+      properties:
+        success:
+          example: true
+          type: boolean
+        requestId:
+          example: req_abc123
+          type: string
+      type: object
+    ErrorResponse_error:
+      example:
+        message: Plan not found
+      properties:
+        message:
+          example: Plan not found
+          type: string
+      type: object
+  securitySchemes:
+    ApiKeyAuth:
+      in: header
+      name: X-API-Key
+      type: apiKey
