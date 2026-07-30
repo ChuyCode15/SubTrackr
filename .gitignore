@@ -49,6 +49,7 @@ ios/
 .claude/
 _typechain_tmp/
 _tc_verify/
+.idea
 
 # Feature flags and A/B testing data
 feature_flags_cache/
