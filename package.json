@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
+    "mock:server": "cd mocks/server && npm start",
+    "mock:dev": "cd mocks/server && npm run dev",
+    "test:sdk:js": "cd mocks/tests/javascript && npm test",
+    "test:sdk:python": "cd mocks/tests/python && pytest",
+    "test:sdk:go": "cd mocks/tests/go && go test",
+    "test:all": "npm run test:sdk:js && npm run test:sdk:python && npm run test:sdk:go",
     "swagger": "npx tsx backend/config/swagger.ts",
     "start": "expo start --dev-client",
     "start:expo-go": "expo start",
